@@ -20,6 +20,16 @@ describe('ChecklistsController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/checklists')
       .expect(200)
-      .expect('This action returns all checklists');
+      .expect([
+        { id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass' },
+        { id: 2, building: 'Maple Apartments', date: '2025-03-08', status: 'Fail' },
+      ]);
+  });
+
+  it('/checklists/:id (GET)', () => {
+    return request(app.getHttpServer())
+      .get('/checklists/1')
+      .expect(200)
+      .expect({ id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass', inspector: 'John Doe', notes: 'All fire alarms working properly.' });
   });
 });
