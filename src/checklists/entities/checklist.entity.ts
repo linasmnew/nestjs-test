@@ -12,9 +12,15 @@ export class Checklist {
     @Column()
     date: Date;
 
+    @Column()
+    inspector: string;
+
+    @Column()
+    notes: string;
+
     @Column({
         type: 'enum',
         enum: Status,
     })
-    status: Status;   
+    status: Status;
 }
