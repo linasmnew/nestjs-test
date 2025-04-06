@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChecklistsController } from './checklists.controller';
 import { ChecklistsService } from './checklists.service';
+import { NotFoundException } from '@nestjs/common';
 
 describe('ChecklistsController', () => {
   let controller: ChecklistsController;
@@ -45,7 +46,7 @@ describe('ChecklistsController', () => {
   });
 
   describe('findOne', () => {
-    it('should call findOne with the correct ID', async () => {
+    it('should call service with the correct ID', async () => {
       await controller.findOne(1);
       expect(checklistsServiceMock.findOne).toHaveBeenCalledWith(1);
     });
@@ -61,13 +62,19 @@ describe('ChecklistsController', () => {
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
       });
-    });  
+    });
+
+    it('should throw a NotFoundException exception when checklist is not found', async () => {
+      checklistsServiceMock.findOne.mockResolvedValue(null);
+
+      await expect(controller.findOne(7)).rejects.toThrow(NotFoundException);
+    });
   });
 
   describe('create', () => {
     it('should call create with the correct data', async () => {
       await controller.create({
-        name: 'Harmony Tower',
+        name: 'Fire Safety Check',
         building: 'Harmony Tower',
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
@@ -75,7 +82,7 @@ describe('ChecklistsController', () => {
       });
 
       expect(checklistsServiceMock.create).toHaveBeenCalledWith({
-        name: 'Harmony Tower',
+        name: 'Fire Safety Check',
         building: 'Harmony Tower',
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
@@ -85,7 +92,7 @@ describe('ChecklistsController', () => {
 
     it('should return the correct response', async () => {
       const result = await controller.create({
-        name: 'Harmony Tower',
+        name: 'Fire Safety Check',
         building: 'Harmony Tower',
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
@@ -94,6 +101,5 @@ describe('ChecklistsController', () => {
 
       expect(result).toEqual('Checklist created successfully');
     });
-
   });
 });

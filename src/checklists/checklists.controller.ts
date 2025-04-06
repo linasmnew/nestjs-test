@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, NotFoundException } from '@nestjs/common';
 import { ChecklistsService } from './checklists.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 
@@ -7,17 +7,22 @@ export class ChecklistsController {
   constructor(private readonly checklistsService: ChecklistsService) {}
 
   @Post()
-  create(@Body() createChecklistDto: CreateChecklistDto) {
-    return this.checklistsService.create(createChecklistDto);
+  async create(@Body() createChecklistDto: CreateChecklistDto) {
+    return await this.checklistsService.create(createChecklistDto);
   }
 
   @Get()
-  findAll() {
-    return this.checklistsService.findAll();
+  async findAll() {
+    return await this.checklistsService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: number) {
-    return this.checklistsService.findOne(id);
+  async findOne(@Param('id') id: number) {
+    const checklist = await this.checklistsService.findOne(id);
+
+    if (!checklist) {
+      throw new NotFoundException('Checklist not found');
+    }
+    return checklist;
   }
 }
