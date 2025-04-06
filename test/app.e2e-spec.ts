@@ -39,4 +39,15 @@ describe('ChecklistsController (e2e)', () => {
       .expect(200)
       .expect({ id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass', inspector: 'John Doe', notes: 'All fire alarms working properly.' });
   });
+
+  it('/checklists/:id (GET) - Not Found', () => {
+    return request(app.getHttpServer())
+      .get('/checklists/7')
+      .expect(404)
+      .expect({
+        statusCode: 404,
+        message: 'Checklist not found',
+        error: 'Not Found',
+      });
+  });
 });

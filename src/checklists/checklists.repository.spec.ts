@@ -1,5 +1,4 @@
 import { ChecklistRepository } from './checklists.repository';
-import { Checklist } from './entities/checklist.entity';
 import { Status } from './checklists.enums';
 
 describe('ChecklistRepository', () => {
@@ -9,7 +8,7 @@ describe('ChecklistRepository', () => {
     repository = new ChecklistRepository();
   });
 
-  describe('findAll', () => {
+  describe('findAll', () => {  
     it('should return all checklists', async () => {
       const checklists = await repository.findAll();
 
@@ -56,7 +55,7 @@ describe('ChecklistRepository', () => {
 
   describe('create', () => {
     it('should return the created checklist', async () => {
-      const newChecklist: Checklist = {
+      const newChecklist = {
         id: 3,
         building: 'Cedar Heights',
         date: new Date('2025-04-15'),

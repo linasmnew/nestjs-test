@@ -1,17 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChecklistsService } from './checklists.service';
-import { Checklist } from './entities/checklist.entity';
-import { Repository } from 'typeorm';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
+import { ChecklistRepository } from './checklists.repository';
 
 describe('ChecklistsService', () => {
   let service: ChecklistsService;
-  let repositoryMock: Partial<Repository<Checklist>>;
+  let repositoryMock: Partial<ChecklistRepository>;
 
   beforeEach(async () => {
     // Create repository mock
     repositoryMock = {
-      find: jest.fn().mockResolvedValue([
+      findAll: jest.fn().mockResolvedValue([
         { id: 1, building: 'Harmony Tower', date: new Date('2025-03-10'), status: 'Pass' },
         { id: 2, building: 'Maple Apartments', date: new Date('2025-03-08'), status: 'Fail' },
       ]),
@@ -23,14 +22,20 @@ describe('ChecklistsService', () => {
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
       }),
-      save: jest.fn().mockImplementation(() => Promise.resolve({})),
+      create: jest.fn().mockImplementation(() => Promise.resolve({
+        id: 1,
+        building: 'Harmony Tower',
+        date: new Date('2025-03-10'),
+        status: 'Pass',
+        inspector: 'John Doe',
+      })),
     };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ChecklistsService,
         {
-          provide: 'ChecklistsRepository',
+          provide: ChecklistRepository,
           useValue: repositoryMock,
         }
       ],
@@ -55,7 +60,7 @@ describe('ChecklistsService', () => {
   describe('findOne', () => {
     it('should invoke findOne with the right id', async () => {
       await service.findOne(1);
-      expect(repositoryMock.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
+      expect(repositoryMock.findOne).toHaveBeenCalledWith(1);
     });
 
     it('should return the found checklist', async () => {
