@@ -18,6 +18,7 @@ describe('ChecklistsController', () => {
       inspector: 'John Doe',
       notes: 'All fire alarms working properly.',
     }),
+    create: jest.fn().mockResolvedValue('Checklist created successfully'),
   };
 
   beforeEach(async () => {
@@ -45,12 +46,12 @@ describe('ChecklistsController', () => {
 
   describe('findOne', () => {
     it('should call findOne with the correct ID', async () => {
-      await controller.findOne('1');
+      await controller.findOne(1);
       expect(checklistsServiceMock.findOne).toHaveBeenCalledWith(1);
-    });  
+    });
 
     it('should return a single checklist', async () => {
-      const result = await controller.findOne('1');
+      const result = await controller.findOne(1);
 
       expect(result).toEqual({
         id: 1,
@@ -61,5 +62,38 @@ describe('ChecklistsController', () => {
         notes: 'All fire alarms working properly.',
       });
     });  
+  });
+
+  describe('create', () => {
+    it('should call create with the correct data', async () => {
+      await controller.create({
+        name: 'Harmony Tower',
+        building: 'Harmony Tower',
+        inspector: 'John Doe',
+        notes: 'All fire alarms working properly.',
+        status: 'Pass'
+      });
+
+      expect(checklistsServiceMock.create).toHaveBeenCalledWith({
+        name: 'Harmony Tower',
+        building: 'Harmony Tower',
+        inspector: 'John Doe',
+        notes: 'All fire alarms working properly.',
+        status: 'Pass'
+      });
+    });
+
+    it('should return the correct response', async () => {
+      const result = await controller.create({
+        name: 'Harmony Tower',
+        building: 'Harmony Tower',
+        inspector: 'John Doe',
+        notes: 'All fire alarms working properly.',
+        status: 'Pass'
+      });
+
+      expect(result).toEqual('Checklist created successfully');
+    });
+
   });
 });
