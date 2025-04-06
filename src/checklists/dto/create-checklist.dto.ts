@@ -6,6 +6,15 @@ export class CreateChecklistDto {
     name: string;
 
     @IsNotEmpty()
+    building: string;
+
+    @IsNotEmpty()
+    inspector: string;
+
+    @IsNotEmpty()
+    notes: string;
+
+    @IsNotEmpty()
     @IsEnum(Status)
     status: string;
 }

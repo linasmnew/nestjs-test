@@ -1,15 +1,7 @@
-import { Transform, Expose } from 'class-transformer';
-import * as dayjs from 'dayjs';
-import { Status } from '../checklists.enums';
+import { PickType } from '@nestjs/mapped-types';
+import { DetailChecklistDto } from './detail-checklist.dto';
 
-export class ListChecklistDto {
-    @Expose()
-    id: number;
-    @Expose()
-    building: string;
-    @Expose()
-    status: Status;
-    @Expose()
-    @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
-    date: Date;
-}
+export class ListChecklistDto extends PickType(
+    DetailChecklistDto,
+    ['id', 'building', 'status', 'date']
+) {}
