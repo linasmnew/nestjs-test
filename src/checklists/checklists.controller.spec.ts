@@ -1,7 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { ChecklistsController } from './checklists.controller';
 import { ChecklistsService } from './checklists.service';
-import { NotFoundException } from '@nestjs/common';
+import NotFoundError from '../exceptions/not-found.exception';
 
 describe('ChecklistsController', () => {
   let controller: ChecklistsController;
@@ -47,12 +47,12 @@ describe('ChecklistsController', () => {
 
   describe('findOne', () => {
     it('should call service with the correct ID', async () => {
-      await controller.findOne(1);
+      await controller.findOne({ id: 1 });
       expect(checklistsServiceMock.findOne).toHaveBeenCalledWith(1);
     });
 
     it('should return a single checklist', async () => {
-      const result = await controller.findOne(1);
+      const result = await controller.findOne({ id: 1 });
 
       expect(result).toEqual({
         id: 1,
@@ -67,7 +67,7 @@ describe('ChecklistsController', () => {
     it('should throw a NotFoundException exception when checklist is not found', async () => {
       checklistsServiceMock.findOne.mockResolvedValue(null);
 
-      await expect(controller.findOne(7)).rejects.toThrow(NotFoundException);
+      await expect(controller.findOne({ id: 7 })).rejects.toThrow(NotFoundError);
     });
   });
 
