@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ChecklistsService } from './checklists.service';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { ChecklistRepository } from './checklists.repository';
+import { Status } from './checklists.enums';
 
 describe('ChecklistsService', () => {
   let service: ChecklistsService;
@@ -11,24 +12,37 @@ describe('ChecklistsService', () => {
     // Create repository mock
     repositoryMock = {
       findAll: jest.fn().mockResolvedValue([
-        { id: 1, building: 'Harmony Tower', date: new Date('2025-03-10'), status: 'Pass' },
-        { id: 2, building: 'Maple Apartments', date: new Date('2025-03-08'), status: 'Fail' },
+        {
+          id: 1,
+          building: 'Harmony Tower',
+          date: new Date('2025-03-10'),
+          status: Status.PASS,
+        },
+        {
+          id: 2,
+          building: 'Maple Apartments',
+          date: new Date('2025-03-08'),
+          status: Status.FAIL,
+        },
       ]),
       findOne: jest.fn().mockResolvedValue({
-        id: 1, 
-        building: 'Harmony Tower', 
-        date: new Date('2025-03-10'), 
-        status: 'Pass',
-        inspector: 'John Doe',
-        notes: 'All fire alarms working properly.',
-      }),
-      create: jest.fn().mockImplementation(() => Promise.resolve({
         id: 1,
         building: 'Harmony Tower',
         date: new Date('2025-03-10'),
-        status: 'Pass',
+        status: Status.PASS,
         inspector: 'John Doe',
-      })),
+        notes: 'All fire alarms working properly.',
+      }),
+      create: jest.fn().mockImplementation(() =>
+        Promise.resolve({
+          id: 3,
+          building: 'Harmony Tower',
+          date: new Date('2025-03-10'),
+          status: Status.PASS,
+          inspector: 'John Doe',
+          notes: 'All fire alarms working properly.',
+        }),
+      ),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -37,7 +51,7 @@ describe('ChecklistsService', () => {
         {
           provide: ChecklistRepository,
           useValue: repositoryMock,
-        }
+        },
       ],
     }).compile();
 
@@ -49,11 +63,16 @@ describe('ChecklistsService', () => {
   });
 
   it('should return all checklists', async () => {
-    const result = await service.findAll();
+    const result = await service.findAll({});
 
     expect(result).toEqual([
       { id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass' },
-      { id: 2, building: 'Maple Apartments', date: '2025-03-08', status: 'Fail' },
+      {
+        id: 2,
+        building: 'Maple Apartments',
+        date: '2025-03-08',
+        status: Status.FAIL,
+      },
     ]);
   });
 
@@ -70,23 +89,44 @@ describe('ChecklistsService', () => {
         id: 1,
         building: 'Harmony Tower',
         date: '2025-03-10',
-        status: 'Pass',
+        status: Status.PASS,
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
       });
     });
-  })
+  });
 
-  it('should create a checklist', async () => {
-    const createChecklistDto: CreateChecklistDto = {
-      name: 'Fire Safety Check',
-      building: 'Harmony Tower',
-      inspector: 'John Doe',
-      notes: 'All fire alarms working properly.',
-      status: 'Pass',
-    };
+  describe('create', () => {
+    it('should invoke repository with the right data', async () => {
+      const checklistDto: CreateChecklistDto = {
+        building: 'Harmony Tower',
+        inspector: 'John Doe',
+        notes: 'All fire alarms working properly.',
+        status: Status.PASS,
+      };
 
-    const result = await service.create(createChecklistDto);
-    expect(result).toEqual('Checklist created successfully');
+      await service.create(checklistDto);
+      expect(repositoryMock.create).toHaveBeenCalledWith(checklistDto);
+    });
+
+    it('should return the created checklist', async () => {
+      const checklistDto: CreateChecklistDto = {
+        building: 'Harmony Tower',
+        inspector: 'John Doe',
+        notes: 'All fire alarms working properly.',
+        status: Status.PASS,
+      };
+
+      const result = await service.create(checklistDto);
+      expect(result).toEqual({
+        id: 3,
+        building: 'Harmony Tower',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        date: expect.any(Date),
+        status: Status.PASS,
+        inspector: 'John Doe',
+        notes: 'All fire alarms working properly.',
+      });
+    });
   });
 });

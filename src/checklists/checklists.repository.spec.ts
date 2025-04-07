@@ -8,9 +8,9 @@ describe('ChecklistRepository', () => {
     repository = new ChecklistRepository();
   });
 
-  describe('findAll', () => {  
+  describe('findAll', () => {
     it('should return all checklists', async () => {
-      const checklists = await repository.findAll();
+      const checklists = await repository.findAll({});
 
       expect(checklists).toEqual([
         {
@@ -56,16 +56,19 @@ describe('ChecklistRepository', () => {
   describe('create', () => {
     it('should return the created checklist', async () => {
       const newChecklist = {
-        id: 3,
         building: 'Cedar Heights',
-        date: new Date('2025-04-15'),
         status: Status.PASS,
         inspector: 'Alex Johnson',
         notes: 'Sprinkler system fully operational.',
       };
 
       const result = await repository.create(newChecklist);
-      expect(result).toEqual(newChecklist);
+      expect(result).toEqual({
+        id: 3,
+        ...newChecklist,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+        date: expect.any(Date),
+      });
     });
   });
 });

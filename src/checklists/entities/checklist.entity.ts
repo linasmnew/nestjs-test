@@ -3,24 +3,24 @@ import { Status } from '../checklists.enums';
 
 @Entity()
 export class Checklist {
-    @PrimaryGeneratedColumn()
-    id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    building: string;
+  @Column()
+  building: string;
 
-    @Column()
-    date: Date;
+  @Column()
+  date: Date;
 
-    @Column()
-    inspector: string;
+  @Column()
+  inspector: string;
 
-    @Column()
-    notes: string;
+  @Column()
+  notes: string;
 
-    @Column({
-        type: 'enum',
-        enum: Status,
-    })
-    status: Status;
+  @Column({
+    type: 'enum',
+    enum: Status,
+  })
+  status: Status;
 }

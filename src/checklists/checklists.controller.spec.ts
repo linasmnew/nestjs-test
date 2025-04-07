@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { ChecklistsController } from './checklists.controller';
 import { ChecklistsService } from './checklists.service';
 import NotFoundError from '../exceptions/not-found.exception';
+import { Status } from './checklists.enums';
 
 describe('ChecklistsController', () => {
   let controller: ChecklistsController;
@@ -9,7 +10,12 @@ describe('ChecklistsController', () => {
   const checklistsServiceMock = {
     findAll: jest.fn().mockResolvedValue([
       { id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass' },
-      { id: 2, building: 'Maple Apartments', date: '2025-03-08', status: 'Fail' },
+      {
+        id: 2,
+        building: 'Maple Apartments',
+        date: '2025-03-08',
+        status: 'Fail',
+      },
     ]),
     findOne: jest.fn().mockResolvedValue({
       id: 1,
@@ -26,7 +32,9 @@ describe('ChecklistsController', () => {
     // Mock the ChecklistsService
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ChecklistsController],
-      providers: [{ provide: ChecklistsService, useValue: checklistsServiceMock }],
+      providers: [
+        { provide: ChecklistsService, useValue: checklistsServiceMock },
+      ],
     }).compile();
 
     controller = module.get<ChecklistsController>(ChecklistsController);
@@ -37,11 +45,16 @@ describe('ChecklistsController', () => {
   });
 
   it('should return all checklists', async () => {
-    const result = await controller.findAll();
+    const result = await controller.findAll({});
 
     expect(result).toEqual([
       { id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass' },
-      { id: 2, building: 'Maple Apartments', date: '2025-03-08', status: 'Fail' },
+      {
+        id: 2,
+        building: 'Maple Apartments',
+        date: '2025-03-08',
+        status: 'Fail',
+      },
     ]);
   });
 
@@ -57,7 +70,7 @@ describe('ChecklistsController', () => {
       expect(result).toEqual({
         id: 1,
         building: 'Harmony Tower',
-        date: '2025-03-10', 
+        date: '2025-03-10',
         status: 'Pass',
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
@@ -67,36 +80,35 @@ describe('ChecklistsController', () => {
     it('should throw a NotFoundException exception when checklist is not found', async () => {
       checklistsServiceMock.findOne.mockResolvedValue(null);
 
-      await expect(controller.findOne({ id: 7 })).rejects.toThrow(NotFoundError);
+      await expect(controller.findOne({ id: 7 })).rejects.toThrow(
+        NotFoundError,
+      );
     });
   });
 
   describe('create', () => {
     it('should call create with the correct data', async () => {
       await controller.create({
-        name: 'Fire Safety Check',
         building: 'Harmony Tower',
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
-        status: 'Pass'
+        status: Status.PASS,
       });
 
       expect(checklistsServiceMock.create).toHaveBeenCalledWith({
-        name: 'Fire Safety Check',
         building: 'Harmony Tower',
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
-        status: 'Pass'
+        status: Status.PASS,
       });
     });
 
     it('should return the correct response', async () => {
       const result = await controller.create({
-        name: 'Fire Safety Check',
         building: 'Harmony Tower',
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
-        status: 'Pass'
+        status: Status.PASS,
       });
 
       expect(result).toEqual('Checklist created successfully');

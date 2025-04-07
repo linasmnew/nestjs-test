@@ -9,21 +9,26 @@ async function bootstrap() {
 
   app.useGlobalFilters(new HttpExceptionFilter());
 
-  app.useGlobalPipes(new ValidationPipe({
-    whitelist: true,
-    forbidNonWhitelisted: true,
-    transform: true,
-    exceptionFactory: (errors) => {
-      const messages = errors.reduce<string[]>((acc, error) => {
-        if (error.constraints) {
-          acc.push(...Object.values(error.constraints));
-        }
-        return acc;
-      }, []);
-      return new BadRequestError(messages);
-    }
-  }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+      exceptionFactory: (errors) => {
+        const messages = errors.reduce<string[]>((acc, error) => {
+          if (error.constraints) {
+            acc.push(...Object.values(error.constraints));
+          }
+          return acc;
+        }, []);
+        return new BadRequestError(messages);
+      },
+    }),
+  );
 
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+bootstrap().catch((err) => {
+  console.error('Error starting NestJS application:', err);
+  process.exit(1);
+});

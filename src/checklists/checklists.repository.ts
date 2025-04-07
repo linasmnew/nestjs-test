@@ -1,5 +1,7 @@
 import { Status } from './checklists.enums';
 import { Checklist } from './entities/checklist.entity';
+import { FindAllChecklistsDto } from './dto/find-all-checklists.dto';
+import { CreateChecklistDto } from './dto/create-checklist.dto';
 
 export class ChecklistRepository {
   private readonly checklists: Checklist[] = [
@@ -21,16 +23,31 @@ export class ChecklistRepository {
     },
   ];
 
-  findAll(): Promise<Checklist[]> {
-    return Promise.resolve(this.checklists);
+  findAll(query: FindAllChecklistsDto): Promise<Checklist[]> {
+    const {
+      status,
+      // page = 1,
+      // limit = 10
+    } = query;
+    const filteredChecklists = this.checklists.filter((checklist) => {
+      if (status && checklist.status !== status) return false;
+      return true;
+    });
+
+    return Promise.resolve(filteredChecklists);
   }
 
   findOne(id: number): Promise<Checklist | null> {
-    return Promise.resolve(this.checklists.find((checklist) => checklist.id === id) || null);
+    return Promise.resolve(
+      this.checklists.find((checklist) => checklist.id === id) || null,
+    );
   }
 
-  create(checklist: Checklist): Promise<Checklist> {
-    // this.checklists.push(checklist);
-    return Promise.resolve(checklist);
+  create(checklist: CreateChecklistDto): Promise<Checklist> {
+    return Promise.resolve({
+      id: this.checklists.length + 1,
+      ...checklist,
+      date: new Date(),
+    });
   }
 }

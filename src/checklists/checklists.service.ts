@@ -1,22 +1,21 @@
 import { plainToInstance } from 'class-transformer';
-import { Injectable, Body } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { CreateChecklistDto } from './dto/create-checklist.dto';
 import { ListChecklistDto } from './dto/list-checklist.dto';
 import { DetailChecklistDto } from './dto/detail-checklist.dto';
 import { ChecklistRepository } from './checklists.repository';
+import { FindAllChecklistsDto } from './dto/find-all-checklists.dto';
 
 @Injectable()
 export class ChecklistsService {
-  constructor(
-    private checklistsRepository: ChecklistRepository
-  ) {}
+  constructor(private checklistsRepository: ChecklistRepository) {}
 
-  create(@Body() createChecklistDto: CreateChecklistDto) {
-    return 'Checklist created successfully';
+  async create(checklist: CreateChecklistDto) {
+    return await this.checklistsRepository.create(checklist);
   }
 
-  async findAll() {
-    const checklists = await this.checklistsRepository.findAll();
+  async findAll(query: FindAllChecklistsDto) {
+    const checklists = await this.checklistsRepository.findAll(query);
     return plainToInstance(ListChecklistDto, checklists, {
       excludeExtraneousValues: true,
     });

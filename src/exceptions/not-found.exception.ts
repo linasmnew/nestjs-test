@@ -7,7 +7,7 @@ export default class NotFoundError extends BaseError {
       'Not Found',
       HttpStatus.NOT_FOUND,
       'The resource you requested could not be found.',
-      `${resource} with identifier '${identifier}' was not found`
+      `${resource} with identifier '${identifier}' was not found`,
     );
   }
 }

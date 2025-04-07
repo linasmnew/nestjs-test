@@ -18,62 +18,114 @@ describe('ChecklistsController (e2e)', () => {
 
     app.useGlobalFilters(new HttpExceptionFilter());
 
-    app.useGlobalPipes(new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      exceptionFactory: (errors) => {
-        const messages = errors.reduce<string[]>((acc, error) => {
-          if (error.constraints) {
-            acc.push(...Object.values(error.constraints));
-          }
-          return acc;
-        }, []);
-        return new BadRequestError(messages);
-      }
-    }));
+    app.useGlobalPipes(
+      new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+        transform: true,
+        exceptionFactory: (errors) => {
+          const messages = errors.reduce<string[]>((acc, error) => {
+            if (error.constraints) {
+              acc.push(...Object.values(error.constraints));
+            }
+            return acc;
+          }, []);
+          return new BadRequestError(messages);
+        },
+      }),
+    );
 
     await app.init();
   });
 
-  it('/checklists (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/checklists')
-      .expect(200)
-      .expect([
-        { id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass' },
-        { id: 2, building: 'Maple Apartments', date: '2025-03-08', status: 'Fail' },
-      ]);
+  describe('/checklists (GET)', () => {
+    it('/checklists (GET)', () => {
+      return request(app.getHttpServer())
+        .get('/checklists')
+        .expect(200)
+        .expect([
+          {
+            id: 1,
+            building: 'Harmony Tower',
+            date: '2025-03-10',
+            status: 'Pass',
+          },
+          {
+            id: 2,
+            building: 'Maple Apartments',
+            date: '2025-03-08',
+            status: 'Fail',
+          },
+        ]);
+    });
+
+    it('/checklists (GET) - Filter by status (Pass)', () => {
+      return request(app.getHttpServer())
+        .get('/checklists?status=Pass')
+        .expect(200)
+        .expect([
+          {
+            id: 1,
+            building: 'Harmony Tower',
+            date: '2025-03-10',
+            status: 'Pass',
+          },
+        ]);
+    });
+
+    it('/checklists (GET) - Filter by status (Fail)', () => {
+      return request(app.getHttpServer())
+        .get('/checklists?status=Fail')
+        .expect(200)
+        .expect([
+          {
+            id: 2,
+            building: 'Maple Apartments',
+            date: '2025-03-08',
+            status: 'Fail',
+          },
+        ]);
+    });
   });
 
-  it('/checklists/:id (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/checklists/1')
-      .expect(200)
-      .expect({ id: 1, building: 'Harmony Tower', date: '2025-03-10', status: 'Pass', inspector: 'John Doe', notes: 'All fire alarms working properly.' });
-  });
+  describe('/checklists/:id (GET)', () => {
+    it('/checklists/:id (GET)', () => {
+      return request(app.getHttpServer())
+        .get('/checklists/1')
+        .expect(200)
+        .expect({
+          id: 1,
+          building: 'Harmony Tower',
+          date: '2025-03-10',
+          status: 'Pass',
+          inspector: 'John Doe',
+          notes: 'All fire alarms working properly.',
+        });
+    });
 
-  it('/checklists/:id (GET) - Not Found', () => {
-    return request(app.getHttpServer())
-      .get('/checklists/7')
-      .expect(404)
-      .expect({
-        title: 'Not Found',
-        status: 404,
-        detail: 'The resource you requested could not be found.',
-        errors: [{ message: "Checklist with identifier '7' was not found" }]
-      });
-  });
+    it('/checklists/:id (GET) - Not Found', () => {
+      return request(app.getHttpServer())
+        .get('/checklists/7')
+        .expect(404)
+        .expect({
+          title: 'Not Found',
+          status: 404,
+          detail: 'The resource you requested could not be found.',
+          errors: [{ message: "Checklist with identifier '7' was not found" }],
+        });
+    });
 
-  it('/checklists/:id (GET) - Invalid ID', () => {
-    return request(app.getHttpServer())
-      .get('/checklists/invalid')
-      .expect(400)
-      .expect({
-        title: 'Bad Request',
-        status: 400,
-        detail: 'The request could not be processed. Please check your input and try again.',
-        errors: [{ message: 'id must be an integer number' }]
-      });
+    it('/checklists/:id (GET) - Invalid ID', () => {
+      return request(app.getHttpServer())
+        .get('/checklists/invalid')
+        .expect(400)
+        .expect({
+          title: 'Bad Request',
+          status: 400,
+          detail:
+            'The request could not be processed. Please check your input and try again.',
+          errors: [{ message: 'id must be an integer number' }],
+        });
+    });
   });
 });
