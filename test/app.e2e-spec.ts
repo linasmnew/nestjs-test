@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import * as request from 'supertest';
+import request from 'supertest';
 import { App } from 'supertest/types';
 import { ChecklistsModule } from './../src/checklists/checklists.module';
 import HttpExceptionFilter from '../src/exceptions/filters/http-exception-filter';

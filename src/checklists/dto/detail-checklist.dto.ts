@@ -1,5 +1,5 @@
 import { Transform, Expose } from 'class-transformer';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { Status } from '../checklists.enums';
 
 export class DetailChecklistDto {
