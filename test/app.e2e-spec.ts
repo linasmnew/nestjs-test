@@ -3,6 +3,8 @@ import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 import { App } from 'supertest/types';
 import { ChecklistsModule } from './../src/checklists/checklists.module';
+import HttpExceptionFilter from '../src/exceptions/filters/http-exception-filter';
+import BadRequestError from '../src/exceptions/bad-request.exception';
 
 describe('ChecklistsController (e2e)', () => {
   let app: INestApplication<App>;
@@ -14,10 +16,21 @@ describe('ChecklistsController (e2e)', () => {
 
     app = moduleFixture.createNestApplication();
 
+    app.useGlobalFilters(new HttpExceptionFilter());
+
     app.useGlobalPipes(new ValidationPipe({
       whitelist: true,
       forbidNonWhitelisted: true,
-      transform: true
+      transform: true,
+      exceptionFactory: (errors) => {
+        const messages = errors.reduce<string[]>((acc, error) => {
+          if (error.constraints) {
+            acc.push(...Object.values(error.constraints));
+          }
+          return acc;
+        }, []);
+        return new BadRequestError(messages);
+      }
     }));
 
     await app.init();
@@ -45,9 +58,22 @@ describe('ChecklistsController (e2e)', () => {
       .get('/checklists/7')
       .expect(404)
       .expect({
-        statusCode: 404,
-        message: 'Checklist not found',
-        error: 'Not Found',
+        title: 'Not Found',
+        status: 404,
+        detail: 'The resource you requested could not be found.',
+        errors: [{ message: "Checklist with identifier '7' was not found" }]
+      });
+  });
+
+  it('/checklists/:id (GET) - Invalid ID', () => {
+    return request(app.getHttpServer())
+      .get('/checklists/invalid')
+      .expect(400)
+      .expect({
+        title: 'Bad Request',
+        status: 400,
+        detail: 'The request could not be processed. Please check your input and try again.',
+        errors: [{ message: 'id must be an integer number' }]
       });
   });
 });
