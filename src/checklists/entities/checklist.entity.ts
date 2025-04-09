@@ -1,4 +1,10 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  CreateDateColumn,
+  UpdateDateColumn,
+} from 'typeorm';
 import { Status } from '../checklists.enums';
 
 @Entity()
@@ -10,7 +16,7 @@ export class Checklist {
   building: string;
 
   @Column()
-  date: Date;
+  date: string;
 
   @Column()
   inspector: string;

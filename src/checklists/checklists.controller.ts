@@ -7,7 +7,7 @@ import { FindAllChecklistsDto } from './dto/find-all-checklists.dto';
 
 @Controller('checklists')
 export class ChecklistsController {
-  constructor(private readonly checklistsService: ChecklistsService) {}
+  constructor(private readonly checklistsService: ChecklistsService) { }
 
   @Post()
   async create(@Body() checklistDto: CreateChecklistDto) {

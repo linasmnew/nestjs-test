@@ -29,7 +29,6 @@ describe('ChecklistsController', () => {
   };
 
   beforeEach(async () => {
-    // Mock the ChecklistsService
     const module: TestingModule = await Test.createTestingModule({
       controllers: [ChecklistsController],
       providers: [
@@ -93,6 +92,7 @@ describe('ChecklistsController', () => {
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
         status: Status.PASS,
+        date: '2025-03-10',
       });
 
       expect(checklistsServiceMock.create).toHaveBeenCalledWith({
@@ -100,6 +100,7 @@ describe('ChecklistsController', () => {
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
         status: Status.PASS,
+        date: '2025-03-10',
       });
     });
 
@@ -109,6 +110,7 @@ describe('ChecklistsController', () => {
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
         status: Status.PASS,
+        date: '2025-03-10',
       });
 
       expect(result).toEqual('Checklist created successfully');

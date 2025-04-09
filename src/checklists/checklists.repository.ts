@@ -8,7 +8,7 @@ export class ChecklistRepository {
     {
       id: 1,
       building: 'Harmony Tower',
-      date: new Date('2025-03-10'),
+      date: '2025-03-10',
       status: Status.PASS,
       inspector: 'John Doe',
       notes: 'All fire alarms working properly.',
@@ -16,7 +16,7 @@ export class ChecklistRepository {
     {
       id: 2,
       building: 'Maple Apartments',
-      date: new Date('2025-03-08'),
+      date: '2025-03-08',
       status: Status.FAIL,
       inspector: 'Jane Smith',
       notes: 'Faults in fire alarms have been reported.',
@@ -43,11 +43,13 @@ export class ChecklistRepository {
     );
   }
 
-  create(checklist: CreateChecklistDto): Promise<Checklist> {
-    return Promise.resolve({
+  create(checklist: CreateChecklistDto): Promise<Partial<Checklist>> {
+    const newChecklist = {
       id: this.checklists.length + 1,
       ...checklist,
-      date: new Date(),
-    });
+    };
+    this.checklists.push(newChecklist);
+
+    return Promise.resolve(newChecklist);
   }
 }

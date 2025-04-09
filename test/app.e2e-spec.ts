@@ -128,4 +128,47 @@ describe('ChecklistsController (e2e)', () => {
         });
     });
   });
+
+  describe('/checklists (POST)', () => {
+    it('/checklists (POST)', () => {
+      return request(app.getHttpServer())
+        .post('/checklists')
+        .send({
+          building: 'Harmony Tower',
+          date: new Date('03/10/2025'),
+          status: 'Pass',
+          inspector: 'John Doe',
+          notes: 'All fire alarms working properly.',
+        })
+        .expect(201)
+        .expect({
+          id: 3,
+          building: 'Harmony Tower',
+          date: '2025-03-10',
+          status: 'Pass',
+          inspector: 'John Doe',
+          notes: 'All fire alarms working properly.',
+        });
+    });
+
+    it('/checklists (POST) - Invalid Date', () => {
+      return request(app.getHttpServer())
+        .post('/checklists')
+        .send({
+          building: 'Harmony Tower',
+          date: 'invalid',
+          status: 'Pass',
+          inspector: 'John Doe',
+          notes: 'All fire alarms working properly.',
+        })
+        .expect(400)
+        .expect({
+          title: 'Bad Request',
+          status: 400,
+          detail:
+            'The request could not be processed. Please check your input and try again.',
+          errors: [{ message: 'date must be a valid ISO 8601 date string' }],
+        });
+    });
+  });
 });

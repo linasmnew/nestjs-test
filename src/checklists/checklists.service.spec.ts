@@ -9,26 +9,25 @@ describe('ChecklistsService', () => {
   let repositoryMock: Partial<ChecklistRepository>;
 
   beforeEach(async () => {
-    // Create repository mock
     repositoryMock = {
       findAll: jest.fn().mockResolvedValue([
         {
           id: 1,
           building: 'Harmony Tower',
-          date: new Date('2025-03-10'),
+          date: '2025-03-10',
           status: Status.PASS,
         },
         {
           id: 2,
           building: 'Maple Apartments',
-          date: new Date('2025-03-08'),
+          date: '2025-03-08',
           status: Status.FAIL,
         },
       ]),
       findOne: jest.fn().mockResolvedValue({
         id: 1,
         building: 'Harmony Tower',
-        date: new Date('2025-03-10'),
+        date: '2025-03-10',
         status: Status.PASS,
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
@@ -37,7 +36,7 @@ describe('ChecklistsService', () => {
         Promise.resolve({
           id: 3,
           building: 'Harmony Tower',
-          date: new Date('2025-03-10'),
+          date: '2025-03-10',
           status: Status.PASS,
           inspector: 'John Doe',
           notes: 'All fire alarms working properly.',
@@ -103,6 +102,7 @@ describe('ChecklistsService', () => {
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
         status: Status.PASS,
+        date: '2025-03-10',
       };
 
       await service.create(checklistDto);
@@ -115,14 +115,14 @@ describe('ChecklistsService', () => {
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
         status: Status.PASS,
+        date: '2025-03-10',
       };
 
       const result = await service.create(checklistDto);
       expect(result).toEqual({
         id: 3,
         building: 'Harmony Tower',
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        date: expect.any(Date),
+        date: '2025-03-10',
         status: Status.PASS,
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',

@@ -1,5 +1,4 @@
-import { Transform, Expose } from 'class-transformer';
-import dayjs from 'dayjs';
+import { Expose } from 'class-transformer';
 import { Status } from '../checklists.enums';
 
 export class DetailChecklistDto {
@@ -19,6 +18,5 @@ export class DetailChecklistDto {
   notes: string;
 
   @Expose()
-  @Transform(({ value }) => dayjs(value).format('YYYY-MM-DD'))
   date: Date;
 }

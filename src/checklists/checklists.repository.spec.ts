@@ -16,7 +16,7 @@ describe('ChecklistRepository', () => {
         {
           id: 1,
           building: 'Harmony Tower',
-          date: new Date('2025-03-10'),
+          date: '2025-03-10',
           status: Status.PASS,
           inspector: 'John Doe',
           notes: 'All fire alarms working properly.',
@@ -24,7 +24,7 @@ describe('ChecklistRepository', () => {
         {
           id: 2,
           building: 'Maple Apartments',
-          date: new Date('2025-03-08'),
+          date: '2025-03-08',
           status: Status.FAIL,
           inspector: 'Jane Smith',
           notes: 'Faults in fire alarms have been reported.',
@@ -40,7 +40,7 @@ describe('ChecklistRepository', () => {
       expect(checklist).toEqual({
         id: 1,
         building: 'Harmony Tower',
-        date: new Date('2025-03-10'),
+        date: '2025-03-10',
         status: Status.PASS,
         inspector: 'John Doe',
         notes: 'All fire alarms working properly.',
@@ -60,14 +60,14 @@ describe('ChecklistRepository', () => {
         status: Status.PASS,
         inspector: 'Alex Johnson',
         notes: 'Sprinkler system fully operational.',
+        date: '2025-03-10',
       };
 
       const result = await repository.create(newChecklist);
       expect(result).toEqual({
         id: 3,
         ...newChecklist,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-        date: expect.any(Date),
+        date: '2025-03-10',
       });
     });
   });

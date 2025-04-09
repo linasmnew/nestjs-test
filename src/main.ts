@@ -21,10 +21,13 @@ async function bootstrap() {
           }
           return acc;
         }, []);
+
         return new BadRequestError(messages);
       },
     }),
   );
+
+  app.enableCors();
 
   await app.listen(process.env.PORT ?? 3000);
 }
