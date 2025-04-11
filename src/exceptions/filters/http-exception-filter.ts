@@ -7,9 +7,8 @@ import {
 import { Response } from 'express';
 
 interface HttpErrorResponse extends HttpException {
-  title: string;
-  detail: string;
-  errors: { message: string }[];
+  message: string;
+  details: string | object;
 }
 
 @Catch(HttpException)

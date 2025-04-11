@@ -24,13 +24,16 @@ describe('ChecklistsController (e2e)', () => {
         forbidNonWhitelisted: true,
         transform: true,
         exceptionFactory: (errors) => {
-          const messages = errors.reduce<string[]>((acc, error) => {
-            if (error.constraints) {
-              acc.push(...Object.values(error.constraints));
-            }
-            return acc;
-          }, []);
-          return new BadRequestError(messages);
+          const details = errors.reduce<Record<string, string[]>>(
+            (acc, validation) => {
+              acc[validation.property] = Object.values(
+                validation.constraints || {},
+              );
+              return acc;
+            },
+            {},
+          );
+          return new BadRequestError(details);
         },
       }),
     );
@@ -108,10 +111,8 @@ describe('ChecklistsController (e2e)', () => {
         .get('/checklists/7')
         .expect(404)
         .expect({
-          title: 'Not Found',
-          status: 404,
-          detail: 'The resource you requested could not be found.',
-          errors: [{ message: "Checklist with identifier '7' was not found" }],
+          details: 'The resource you requested could not be found.',
+          message: "Checklist with identifier '7' was not found",
         });
     });
 
@@ -120,11 +121,8 @@ describe('ChecklistsController (e2e)', () => {
         .get('/checklists/invalid')
         .expect(400)
         .expect({
-          title: 'Bad Request',
-          status: 400,
-          detail:
-            'The request could not be processed. Please check your input and try again.',
-          errors: [{ message: 'id must be an integer number' }],
+          details: { id: ['id must be an integer number'] },
+          message: 'The request could not be processed.',
         });
     });
   });
@@ -163,11 +161,8 @@ describe('ChecklistsController (e2e)', () => {
         })
         .expect(400)
         .expect({
-          title: 'Bad Request',
-          status: 400,
-          detail:
-            'The request could not be processed. Please check your input and try again.',
-          errors: [{ message: 'date must be a valid ISO 8601 date string' }],
+          details: { date: ['date must be a valid ISO 8601 date string'] },
+          message: 'The request could not be processed.',
         });
     });
   });

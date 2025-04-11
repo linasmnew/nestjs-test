@@ -15,14 +15,16 @@ async function bootstrap() {
       forbidNonWhitelisted: true,
       transform: true,
       exceptionFactory: (errors) => {
-        const messages = errors.reduce<string[]>((acc, error) => {
-          if (error.constraints) {
-            acc.push(...Object.values(error.constraints));
-          }
-          return acc;
-        }, []);
-
-        return new BadRequestError(messages);
+        const details = errors.reduce<Record<string, string[]>>(
+          (acc, validation) => {
+            acc[validation.property] = Object.values(
+              validation.constraints || {},
+            );
+            return acc;
+          },
+          {},
+        );
+        return new BadRequestError(details);
       },
     }),
   );
