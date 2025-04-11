@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { BaseError } from './base.exception';
 
 export default class BadRequestError extends BaseError {
-  constructor(details: string | object) {
+  constructor(details: Record<string, string[]>) {
     super(
       HttpStatus.BAD_REQUEST,
       details,

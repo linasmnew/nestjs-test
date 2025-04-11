@@ -111,8 +111,10 @@ describe('ChecklistsController (e2e)', () => {
         .get('/checklists/7')
         .expect(404)
         .expect({
-          details: 'The resource you requested could not be found.',
-          message: "Checklist with identifier '7' was not found",
+          details: {
+            Checklist: ["Checklist with identifier '7' was not found"],
+          },
+          message: 'The resource you requested could not be found.',
         });
     });
 
